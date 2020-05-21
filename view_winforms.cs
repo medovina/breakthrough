@@ -103,6 +103,7 @@ class View : Form {
             if (game.validMove(move)) {
                 moveFrom = null;
                 game.move(move);
+                Invalidate();
                 if (game.winner == 0)
                     this.move();  // opponent move
                 return;
