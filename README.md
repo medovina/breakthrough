@@ -10,7 +10,7 @@ The game also includes a command-line interface that lets you run a series of si
 
 Breakthrough can be played on boards of various sizes, but in this implementation the board is always 7 x 7.
 
-### Building the game
+### Building and running the game
 
 On Linux or macOS, you can build for GTK and Mono like this:
 
@@ -18,10 +18,22 @@ On Linux or macOS, you can build for GTK and Mono like this:
 $ msbuild breakthrough_gtk.csproj
 ```
 
+Then, to run the game:
+
+```
+$ mono breakthrough_gtk.exe [options]
+```
+
 On Windows, you can build for .NET Core and Windows Forms like this:
 
 ```
-$ dotnet build breakthrough_winforms.csproj
+C:\breakthrough> dotnet build breakthrough_winforms.csproj
+```
+
+Then, to run the game:
+
+```
+C:\breakthrough> dotnet run --project breakthrough_winforms.csproj [options]
 ```
 
 ### Playing the game
