@@ -12,10 +12,10 @@ Breakthrough can be played on boards of various sizes, but in this implementatio
 
 ### Building and running the game
 
-On Linux or macOS, you can build for GTK and Mono like this:
+On __Linux__:
 
 ```
-$ msbuild breakthrough_gtk.csproj
+$ make
 ```
 
 Then, to run the game:
@@ -24,16 +24,28 @@ Then, to run the game:
 $ mono breakthrough_gtk.exe [options]
 ```
 
-On Windows, you can build for .NET Core and Windows Forms like this:
+On __macOS__:
 
 ```
-C:\breakthrough> dotnet build breakthrough_winforms.csproj
+$ ./build_mac.sh
 ```
 
 Then, to run the game:
 
 ```
-C:\breakthrough> dotnet run --project breakthrough_winforms.csproj [options]
+$ mono breakthrough_gtk.exe [options]
+```
+
+On __Windows__:
+
+```
+C:\breakthrough> dotnet build
+```
+
+Then, to run the game:
+
+```
+C:\breakthrough> dotnet run [options]
 ```
 
 ### Playing the game
