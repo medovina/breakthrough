@@ -3,7 +3,7 @@ using Gdk;
 using Gtk;
 using System;
 
-using Color = Gdk.Color;
+using CairoHelper = Gdk.CairoHelper;
 using Window = Gtk.Window;
 
 class View : Window {
@@ -38,30 +38,30 @@ class View : Window {
         QueueDraw();
     }
     
-    static Color color(string name) {
-        Color c = new Color();
-        if (!Color.Parse(name, ref c))
+    static RGBA color(string name) {
+        RGBA c = new RGBA();
+        if (!c.Parse(name))
             throw new Exception("unknown color");
         return c;
     }
     
-    static void drawLine(Context c, Color color, int lineWidth, int x1, int y1, int x2, int y2) {
-        CairoHelper.SetSourceColor(c, color);
+    static void drawLine(Context c, RGBA color, int lineWidth, int x1, int y1, int x2, int y2) {
+        CairoHelper.SetSourceRgba(c, color);
         c.LineWidth = lineWidth;
         c.MoveTo(x1, y1);
         c.LineTo(x2, y2);
         c.Stroke();
     }
     
-    static void drawRectangle(Context c, Color color, int lineWidth, int x, int y, int width, int height) {
-        CairoHelper.SetSourceColor(c, color);
+    static void drawRectangle(Context c, RGBA color, int lineWidth, int x, int y, int width, int height) {
+        CairoHelper.SetSourceRgba(c, color);
         c.LineWidth = lineWidth;
         c.Rectangle(x, y, width, height);
         c.Stroke();
     }
     
-    static void fillRectangle(Context c, Color color, int x, int y, int width, int height) {
-        CairoHelper.SetSourceColor(c, color);
+    static void fillRectangle(Context c, RGBA color, int x, int y, int width, int height) {
+        CairoHelper.SetSourceRgba(c, color);
         c.Rectangle(x, y, width, height);
         c.Fill();
     }
@@ -71,41 +71,39 @@ class View : Window {
         c.Paint();
     }
     
-    void highlight(Context c, Color color, int x, int y) {
+    void highlight(Context c, RGBA color, int x, int y) {
         drawRectangle(c, color, 4, Square * x, Square * y, Square, Square);
     }
     
-    protected override bool OnExposeEvent(EventExpose e) {
-        Color peru = color("peru"), paleGoldenrod = color("paleGoldenrod"),
+    protected override bool OnDrawn(Context c) {
+        RGBA peru = color("peru"), paleGoldenrod = color("paleGoldenrod"),
               lightGreen = color("lightGreen"), darkGray = color("darkGray"),
               green = color("green");
         
-        using (Context c = CairoHelper.Create(GdkWindow)) {
-            for (int x = 0 ; x < Game.Size ; ++x)
-                for (int y = 0 ; y < Game.Size ; ++y) {
-                    fillRectangle(c, (x + y) % 2 == 0 ? paleGoldenrod : peru,
-                                    Square * x, Square * y, Square, Square);
-                    if (game.winner > 0 && game.squares[x, y] == game.winner)
-                        fillRectangle(c, lightGreen,
-                                      Square * x + 4, Square * y + 4, Square - 8, Square - 8);
-                    if (lastMove != null && wasCapture &&
-                        x == lastMove.to.x && y == lastMove.to.y) {
-                            drawLine(c, darkGray, 4, Square * x + 4, Square * y + 4,
-                                          Square * (x + 1) - 4, Square * (y + 1) - 4);
-                            drawLine(c, darkGray, 4, Square * x + 4, Square * (y + 1) - 4,
-                                          Square * (x + 1) - 4, Square * y + 4);
-                    }
-                    if (game.squares[x, y] > 0)
-                        drawImage(c, game.squares[x, y] == 1 ? whitePawn : blackPawn,
-                                  Square * x, Square * y);
+        for (int x = 0 ; x < Game.Size ; ++x)
+            for (int y = 0 ; y < Game.Size ; ++y) {
+                fillRectangle(c, (x + y) % 2 == 0 ? paleGoldenrod : peru,
+                                Square * x, Square * y, Square, Square);
+                if (game.winner > 0 && game.squares[x, y] == game.winner)
+                    fillRectangle(c, lightGreen,
+                                    Square * x + 4, Square * y + 4, Square - 8, Square - 8);
+                if (lastMove != null && wasCapture &&
+                    x == lastMove.to.x && y == lastMove.to.y) {
+                        drawLine(c, darkGray, 4, Square * x + 4, Square * y + 4,
+                                        Square * (x + 1) - 4, Square * (y + 1) - 4);
+                        drawLine(c, darkGray, 4, Square * x + 4, Square * (y + 1) - 4,
+                                        Square * (x + 1) - 4, Square * y + 4);
                 }
-            
-            if (moveFrom != null)
-                highlight(c, green, moveFrom.x, moveFrom.y);
-            else if (lastMove != null) {
-                highlight(c, green, lastMove.from.x, lastMove.from.y);
-                highlight(c, green, lastMove.to.x, lastMove.to.y);
+                if (game.squares[x, y] > 0)
+                    drawImage(c, game.squares[x, y] == 1 ? whitePawn : blackPawn,
+                                Square * x, Square * y);
             }
+        
+        if (moveFrom != null)
+            highlight(c, green, moveFrom.x, moveFrom.y);
+        else if (lastMove != null) {
+            highlight(c, green, lastMove.from.x, lastMove.from.y);
+            highlight(c, green, lastMove.to.x, lastMove.to.y);
         }
         
         return true;

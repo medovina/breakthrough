@@ -1,20 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
-    <EnableDefaultCompileItems>False</EnableDefaultCompileItems>
-    <OutputPath>.</OutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    <Compile Include="clever.cs" />
-    <Compile Include="game.cs" />
-    <Compile Include="my_agent.cs" />
-    <Compile Include="util.cs" />
-    <Compile Include="view_winforms.cs" />
+    <PackageReference Include="GtkSharp" Version="3.24.24.34" />
   </ItemGroup>
 
 </Project>
