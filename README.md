@@ -4,25 +4,25 @@
 
 This is a C# implementation of the game of [Breakthrough](https://en.wikipedia.org/wiki/Breakthrough_(board_game)).  It includes a computer player named Clever that plays using a set of simple heuristics.  You may attempt to write your own agent that can defeat Clever.
 
-The game includes a graphical interface in GTK 3 that lets you play interactively against a computer player, or watch two computer players play each other.
+The game builds using .NET, and includes a graphical interface in [GTK 3](https://github.com/GtkSharp/GtkSharp) that lets you play interactively against a computer player, or watch two computer players play each other.
 
 The game also includes a command-line interface that lets you run a series of simulated games between two computer players to see which is stronger.
 
 Breakthrough can be played on boards of various sizes, but in this implementation the board is always 7 x 7.
 
-### Building and running the game
+### Playing the game
+
+If you run `dotnet run` with no command-line arguments, the graphical interface appears.  By default, the computer agent Clever will play the black pieces.  You may play white against Clever manually: click on the piece you'd like to move, then click where you'd like it to go.  Alternatively, press the space bar repeatedly to watch MyAgent (white) play against clever (Black).
+
+The default implementation of MyAgent moves randomly.  It stands no chance against Clever, who will defeat it in every game.  You may attempt to improve MyAgent to be smart enough to beat Clever.
+
+You can specify command-line options for Breakthrough like this:
 
 ```
 $ dotnet run -- [options]
 ```
 
-### Playing the game
-
-If you run the executable with no command-line arguments, the graphical interface appears.  By default, the computer agent Clever will play the black pieces.  You may play white against Clever manually: click on the piece you'd like to move, then click where you'd like it to go.  Alternatively, press the space bar repeatedly to watch MyAgent (white) play against clever (Black).
-
-The default implementation of MyAgent moves randomly.  It stands no chance against Clever, who will defeat it in every game.  You may attempt to improve MyAgent to be smart enough to beat Clever.
-
-To run a series of games between MyAgent and Clever, run the executable from the command line and use the -sim option to specify the number of games.  For example:
+To run a series of games between MyAgent and Clever, use the -sim option to specify the number of games.  For example:
 
 ```
 $ dotnet run -- -sim 5
