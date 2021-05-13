@@ -4,7 +4,7 @@
 
 This is a C# implementation of the game of [Breakthrough](https://en.wikipedia.org/wiki/Breakthrough_(board_game)).  It includes a computer player named Clever that plays using a set of simple heuristics.  You may attempt to write your own agent that can defeat Clever.
 
-The game includes a graphical interface that lets you play interactively against a computer player, or watch two computer players play each other.  I've provided two versions of the user interface code, one using GTK 2 and the other using Windows Forms.
+The game includes a graphical interface in GTK 3 that lets you play interactively against a computer player, or watch two computer players play each other.
 
 The game also includes a command-line interface that lets you run a series of simulated games between two computer players to see which is stronger.
 
@@ -12,40 +12,8 @@ Breakthrough can be played on boards of various sizes, but in this implementatio
 
 ### Building and running the game
 
-On __Linux__:
-
 ```
-$ make
-```
-
-Then, to run the game:
-
-```
-$ mono breakthrough_gtk.exe [options]
-```
-
-On __macOS__:
-
-```
-$ ./build_mac.sh
-```
-
-Then, to run the game:
-
-```
-$ mono breakthrough_gtk.exe [options]
-```
-
-On __Windows__:
-
-```
-C:\breakthrough> dotnet build
-```
-
-Then, to run the game:
-
-```
-C:\breakthrough> dotnet run [options]
+$ dotnet run -- [options]
 ```
 
 ### Playing the game
@@ -57,7 +25,7 @@ The default implementation of MyAgent moves randomly.  It stands no chance again
 To run a series of games between MyAgent and Clever, run the executable from the command line and use the -sim option to specify the number of games.  For example:
 
 ```
-$ mono breakthrough_gtk.exe -sim 5
+$ dotnet run -- -sim 5
 playing 5 games
 game 0: winner = Clever
 game 1: winner = Clever
