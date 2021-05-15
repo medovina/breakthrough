@@ -2,9 +2,18 @@ using Cairo;
 using Gdk;
 using Gtk;
 using System;
-
+using System.Collections.Generic;
 using CairoHelper = Gdk.CairoHelper;
 using Window = Gtk.Window;
+
+class MoveCapture {
+    public Move move;
+    public bool capture;
+    public MoveCapture(Move move, bool capture) {
+        this.move = move;
+        this.capture = capture;
+    }
+}
 
 class View : Window {
     Game game;
@@ -12,7 +21,9 @@ class View : Window {
     Move lastMove = null;
     Pos moveFrom = null;
     bool wasCapture;
-    
+    Stack<MoveCapture> stk = new Stack<MoveCapture>();
+    bool undone;
+    bool undoneCapture;
     const int Square = 80;  // square size in pixels
     Pixbuf blackPawn = new Pixbuf("black_pawn.png"),
            whitePawn = new Pixbuf("white_pawn.png");
@@ -33,8 +44,10 @@ class View : Window {
     }
     
     void move() {
+        undone = false;
         lastMove = players[game.turn].chooseMove(game);
         wasCapture = game.move(lastMove);
+        stk.Push(new MoveCapture(lastMove, wasCapture));
         QueueDraw();
     }
     
@@ -87,7 +100,7 @@ class View : Window {
                 if (game.winner > 0 && game.squares[x, y] == game.winner)
                     fillRectangle(c, lightGreen,
                                     Square * x + 4, Square * y + 4, Square - 8, Square - 8);
-                if (lastMove != null && wasCapture &&
+                if (lastMove != null && !undone && wasCapture &&
                     x == lastMove.to.x && y == lastMove.to.y) {
                         drawLine(c, darkGray, 4, Square * x + 4, Square * y + 4,
                                         Square * (x + 1) - 4, Square * (y + 1) - 4);
@@ -99,16 +112,16 @@ class View : Window {
                                 Square * x, Square * y);
             }
         
-        if (moveFrom != null)
+        if (!undone && moveFrom != null)
             highlight(c, green, moveFrom.x, moveFrom.y);
-        else if (lastMove != null) {
+        else if (!undone && lastMove != null) {
             highlight(c, green, lastMove.from.x, lastMove.from.y);
             highlight(c, green, lastMove.to.x, lastMove.to.y);
         }
         
         return true;
     }
-    
+
     bool gameOver() {
         if (game.winner > 0) {
             Application.Quit();
@@ -117,7 +130,22 @@ class View : Window {
         return false;
     }
     
+    void unmove() {
+        if (stk.Count == 0) Application.Quit();
+        else {
+            undone = true;
+            var oldMove = stk.Pop();
+            undoneCapture = oldMove.capture;
+            game.unmove(oldMove.move, oldMove.capture);
+            QueueDraw();
+        }
+    }
+
     protected override bool OnKeyPressEvent (EventKey e) {
+        if (e.Key == Gdk.Key.q) {
+            unmove();
+            return true;
+        }
         if (gameOver() || players[1] == null)
             return true;
         
