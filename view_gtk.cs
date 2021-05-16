@@ -6,14 +6,7 @@ using System.Collections.Generic;
 using CairoHelper = Gdk.CairoHelper;
 using Window = Gtk.Window;
 
-class MoveCapture {
-    public Move move;
-    public bool capture;
-    public MoveCapture(Move move, bool capture) {
-        this.move = move;
-        this.capture = capture;
-    }
-}
+
 
 class View : Window {
     Game game;
@@ -21,16 +14,16 @@ class View : Window {
     Move lastMove = null;
     Pos moveFrom = null;
     bool wasCapture;
-    Stack<MoveCapture> stk = new Stack<MoveCapture>();
-    bool undone;
-    bool undoneCapture;
+    Stack<(Move, bool)> undoStack = new Stack<(Move, bool)>();
+    bool undone = false, isSimulation = false;
     const int Square = 80;  // square size in pixels
     Pixbuf blackPawn = new Pixbuf("black_pawn.png"),
            whitePawn = new Pixbuf("white_pawn.png");
-    
+
     public View(Game game, Player[] players) : base("") {
         this.game = game;
         this.players = players;
+        isSimulation = game.seed > 0;
         Resize(Square * Game.Size, Square * Game.Size);
         AddEvents((int) (EventMask.KeyPressMask | EventMask.ButtonPressMask));
         setTitle();
@@ -47,10 +40,26 @@ class View : Window {
         undone = false;
         lastMove = players[game.turn].chooseMove(game);
         wasCapture = game.move(lastMove);
-        stk.Push(new MoveCapture(lastMove, wasCapture));
+        undoStack.Push((lastMove, wasCapture));
         QueueDraw();
     }
+
+    void unmove() {
+        if (isSimulation) {
+            if (undoStack.Count == 0) Application.Quit();
+            else {
+                undone = true;
+                var oldMove = undoStack.Pop();
+                Move undoMove = oldMove.Item1;
+                bool undoCapture = oldMove.Item2;
+                game.unmove(undoMove, undoCapture);
+                QueueDraw();
+            }
+        }
+    }
     
+    public bool undoable() => isSimulation && !undone; // game is simulated and no undoing needed
+
     static RGBA color(string name) {
         RGBA c = new RGBA();
         if (!c.Parse(name))
@@ -100,7 +109,7 @@ class View : Window {
                 if (game.winner > 0 && game.squares[x, y] == game.winner)
                     fillRectangle(c, lightGreen,
                                     Square * x + 4, Square * y + 4, Square - 8, Square - 8);
-                if (lastMove != null && !undone && wasCapture &&
+                if (lastMove != null && (undoable() || !undone) && wasCapture &&
                     x == lastMove.to.x && y == lastMove.to.y) {
                         drawLine(c, darkGray, 4, Square * x + 4, Square * y + 4,
                                         Square * (x + 1) - 4, Square * (y + 1) - 4);
@@ -112,9 +121,9 @@ class View : Window {
                                 Square * x, Square * y);
             }
         
-        if (!undone && moveFrom != null)
+        if ((undoable() || !undone) && moveFrom != null)
             highlight(c, green, moveFrom.x, moveFrom.y);
-        else if (!undone && lastMove != null) {
+        else if ((undoable() || !undone) && lastMove != null) {
             highlight(c, green, lastMove.from.x, lastMove.from.y);
             highlight(c, green, lastMove.to.x, lastMove.to.y);
         }
@@ -129,20 +138,9 @@ class View : Window {
         }
         return false;
     }
-    
-    void unmove() {
-        if (stk.Count == 0) Application.Quit();
-        else {
-            undone = true;
-            var oldMove = stk.Pop();
-            undoneCapture = oldMove.capture;
-            game.unmove(oldMove.move, oldMove.capture);
-            QueueDraw();
-        }
-    }
 
     protected override bool OnKeyPressEvent (EventKey e) {
-        if (e.Key == Gdk.Key.q) {
+        if (e.Key == Gdk.Key.z) {
             unmove();
             return true;
         }
