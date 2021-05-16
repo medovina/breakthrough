@@ -58,8 +58,6 @@ class View : Window {
         }
     }
     
-    public bool undoable() => isSimulation && !undone; // game is simulated and no undoing needed
-
     static RGBA color(string name) {
         RGBA c = new RGBA();
         if (!c.Parse(name))
@@ -109,7 +107,7 @@ class View : Window {
                 if (game.winner > 0 && game.squares[x, y] == game.winner)
                     fillRectangle(c, lightGreen,
                                     Square * x + 4, Square * y + 4, Square - 8, Square - 8);
-                if (lastMove != null && (undoable() || !undone) && wasCapture &&
+                if (lastMove != null && (!undone) && wasCapture &&
                     x == lastMove.to.x && y == lastMove.to.y) {
                         drawLine(c, darkGray, 4, Square * x + 4, Square * y + 4,
                                         Square * (x + 1) - 4, Square * (y + 1) - 4);
@@ -121,9 +119,9 @@ class View : Window {
                                 Square * x, Square * y);
             }
         
-        if ((undoable() || !undone) && moveFrom != null)
+        if (!undone && moveFrom != null)
             highlight(c, green, moveFrom.x, moveFrom.y);
-        else if ((undoable() || !undone) && lastMove != null) {
+        else if (!undone && lastMove != null) {
             highlight(c, green, lastMove.from.x, lastMove.from.y);
             highlight(c, green, lastMove.to.x, lastMove.to.y);
         }
