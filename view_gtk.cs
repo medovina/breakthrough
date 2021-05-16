@@ -23,7 +23,7 @@ class View : Window {
     public View(Game game, Player[] players) : base("") {
         this.game = game;
         this.players = players;
-        isSimulation = game.seed > 0;
+        isSimulation = game.seed >= 0;
         Resize(Square * Game.Size, Square * Game.Size);
         AddEvents((int) (EventMask.KeyPressMask | EventMask.ButtonPressMask));
         setTitle();
@@ -49,9 +49,7 @@ class View : Window {
             if (undoStack.Count == 0) Application.Quit();
             else {
                 undone = true;
-                var oldMove = undoStack.Pop();
-                Move undoMove = oldMove.Item1;
-                bool undoCapture = oldMove.Item2;
+                (Move undoMove, bool undoCapture) = undoStack.Pop();
                 game.unmove(undoMove, undoCapture);
                 QueueDraw();
             }
@@ -107,7 +105,7 @@ class View : Window {
                 if (game.winner > 0 && game.squares[x, y] == game.winner)
                     fillRectangle(c, lightGreen,
                                     Square * x + 4, Square * y + 4, Square - 8, Square - 8);
-                if (lastMove != null && (!undone) && wasCapture &&
+                if (lastMove != null && !undone && wasCapture &&
                     x == lastMove.to.x && y == lastMove.to.y) {
                         drawLine(c, darkGray, 4, Square * x + 4, Square * y + 4,
                                         Square * (x + 1) - 4, Square * (y + 1) - 4);
