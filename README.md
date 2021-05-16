@@ -37,7 +37,7 @@ MyAgent used 0.0 ms/move, Clever used 0.0 ms/move
 $ 
 ```
 
-Each game is played with a different random seed, which is the number displayed next to each game in the output above.  If you want to see the actual series of moves that were played in any of these games, run the executable and pass "-seed \<num>".  That will display the graphical interface and allow you to step through that particular game.
+Each game is played with a different random seed, which is the number displayed next to each game in the output above.  If you want to see the actual series of moves that were played in any of these games, run the executable and pass "-seed \<num>".  That will display the graphical interface and allow you to step through that particular game. You may use the 'z' key to undo the moves in order to study the gameplay better.
 
 Clever plays somewhat randomly, so different random seeds will usually lead to different games even if your agent is deterministic.  In particular, Clever's first move is always random.
 
