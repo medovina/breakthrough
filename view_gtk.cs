@@ -10,9 +10,9 @@ using Window = Gtk.Window;
 
 class View : Window {
     Game game;
-    Player[] players;
-    Move lastMove = null;
-    Pos moveFrom = null;
+    Player?[] players;
+    Move? lastMove = null;
+    Pos? moveFrom = null;
     bool wasCapture;
     Stack<(Move, bool)> undoStack = new Stack<(Move, bool)>();
     bool undone = false, isSimulation = false;
@@ -20,7 +20,7 @@ class View : Window {
     Pixbuf blackPawn = new Pixbuf("black_pawn.png"),
            whitePawn = new Pixbuf("white_pawn.png");
 
-    public View(Game game, Player[] players) : base("") {
+    public View(Game game, Player?[] players) : base("") {
         this.game = game;
         this.players = players;
         isSimulation = game.seed >= 0;
@@ -31,14 +31,15 @@ class View : Window {
     
     void setTitle() {
         string seed = game.seed >= 0 ? $"({game.seed})" : "";
-        string name1 = players[1] == null ? "Human" : players[1].GetType().Name;
-        string name2 = players[2].GetType().Name;
+        Player? p1 = players[1];
+        string name1 = p1 == null ? "Human" : p1.GetType().Name;
+        string name2 = players[2]!.GetType().Name;
         Title = $"Breakthrough{seed}: white = {name1} | black = {name2}";
     }
     
     void move() {
         undone = false;
-        lastMove = players[game.turn].chooseMove(game);
+        lastMove = players[game.turn]!.chooseMove(game);
         wasCapture = game.move(lastMove);
         undoStack.Push((lastMove, wasCapture));
         QueueDraw();
@@ -185,7 +186,7 @@ class View : Window {
         return true;
     }
     
-    public static void run(Game game, Player[] players) {
+    public static void run(Game game, Player?[] players) {
         Application.Init();
         View v = new View(game, players);
         v.ShowAll();

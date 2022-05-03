@@ -137,8 +137,8 @@ interface Player {
 }
 
 class Program {
-    static void simulate(Player[] players, int games) {
-        string name(int p) => players[p].GetType().Name;
+    static void simulate(Player?[] players, int games) {
+        string name(int p) => players[p]!.GetType().Name;
         
         WriteLine($"playing {games} games");
         int[] moves = new int[3];
@@ -149,7 +149,7 @@ class Program {
             Game game = new Game(x);
             while (game.winner == 0) {
                 Stopwatch sw = Stopwatch.StartNew();
-                Move move = players[game.turn].chooseMove(game.clone());
+                Move move = players[game.turn]!.chooseMove(game.clone());
                 sw.Stop();
                 moves[game.turn] += 1;
                 elapsed[game.turn] += sw.ElapsedMilliseconds;
@@ -168,7 +168,7 @@ class Program {
     
     [STAThread]
     static void Main(string[] args) {
-        Player[] players = { null, new MyAgent(), new Clever() };
+        Player?[] players = { null, new MyAgent(), new Clever() };
         int seed = -1;
 
         for (int i = 0 ; i < args.Length ; ++i)
