@@ -21,7 +21,7 @@ class Clever : Player {
         
         int adjY(int y) => dir > 0 ? y : Game.Size - 1 - y;
         
-        List<Move> best = new List<Move>();
+        List<Move> best = [];
         int bestVal = int.MinValue;
         
         int forwardY = dir > 0 ? int.MinValue : int.MaxValue;
@@ -80,8 +80,7 @@ class Clever : Player {
             }
             
             if (val > bestVal) {
-                best = new List<Move>();
-                best.Add(m);
+                best = [m];
                 bestVal = val;
             } else if (val == bestVal)
                 best.Add(m);

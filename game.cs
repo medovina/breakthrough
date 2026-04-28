@@ -66,8 +66,8 @@ class Game {
     }
     
     public int dir() => turn == 1 ? -1 : 1;
-    
-    bool valid(Pos pos) => pos.x >= 0 && pos.x < Game.Size &&
+
+    static bool valid(Pos pos) => pos.x >= 0 && pos.x < Game.Size &&
                            pos.y >= 0 && pos.y < Game.Size;
     
     // Return true if the given move is valid.
@@ -88,9 +88,9 @@ class Game {
         for (int x = 0 ; x < Size ; ++x)
             for (int y = 0 ; y < Size ; ++y)
                 if (squares[x, y] == turn) {
-                    Pos from = new Pos(x, y);
+                    Pos from = new(x, y);
                     for (int x1 = x - 1; x1 <= x + 1 ; ++x1) {
-                        Move move = new Move(from, new Pos(x1, y + dir()));
+                        Move move = new(from, new Pos(x1, y + dir()));
                         if (validMove(move))
                             ret.Add(move);
                     }
@@ -146,7 +146,7 @@ class Program {
         int[] wins = new int[3];
         
         for (int x = 0 ; x < games ; ++x) {
-            Game game = new Game(x);
+            Game game = new(x);
             while (game.winner == 0) {
                 Stopwatch sw = Stopwatch.StartNew();
                 Move move = players[game.turn]!.chooseMove(game.clone());
